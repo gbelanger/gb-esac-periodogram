@@ -83,7 +83,6 @@ public class AggregatePeriodogram {
 		break;
 	    }
 	}
-        
 	AveragedPower avg = null;
 	if (f == null) {
 	    f = freqFactory.createFrequency(freq);
