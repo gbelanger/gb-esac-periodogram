@@ -61,6 +61,7 @@ public final class PeriodogramMaker {
     	double avgOfInputData = BasicStats.getMean(countsOrRates);
 	for ( int i=0; i < nDataBins; i++ ) {
 	    binHeights[i] = countsOrRates[i] - avgOfInputData;
+	    if ( Double.isNaN(binHeights[i]) ) binHeights[i] = 0.0;
 	}
 	logger.info("  Sum of intensities BEFORE mean-subtraction = "+BasicStats.getSum(countsOrRates)+" (after = "+BasicStats.getSum(binHeights)+")");
 	logger.info("  Sum of squared intensities AFTER mean-subtraction = "+BasicStats.getSumOfSquares(binHeights));
@@ -75,20 +76,19 @@ public final class PeriodogramMaker {
 	double[] windowedData = windowFunction.apply(binHeights);
 	// NO WINDOW
 	windowedData = binHeights;
+
   	//  Define number of bins as a power-of-two
   	double n = Math.log(nDataBins)/Math.log(2);
   	double exp = Math.ceil(n);
   	int nPowerOfTwoBins = (int) Math.pow(2, exp);
 	//  Keep the original number of bins
 	//int nPowerOfTwoBins = nDataBins;
-	//
- 	//  Padding screws up the frequencies because the step is smaller,
-	//  but it can be fixed: remains to be fixed
- 	//
+
+	//  Pad with zeros from the original number of bins up to the closest power of 2
   	int nBins = samplingFactor*nPowerOfTwoBins;
   	double[] paddedData = padWithZeros(windowedData, nBins);
 	// NO PADDING
-	paddedData = windowedData;
+	//paddedData = windowedData;
 
  	//  Define test frequencies
  	double timeBinWidth = duration/nPowerOfTwoBins;
