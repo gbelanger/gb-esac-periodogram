@@ -96,12 +96,12 @@ public final class PeriodogramMaker {
 	double nuMax = 1d/(2*timeBinWidth);
 	double[] testFreqs = PeriodogramUtils.getFourierFrequencies(nuMin, nuMax, duration, samplingFactor);
 	//  Do the FFT
-	//  Using FFT.java
+	////  Using FFT.java
 	logger.info("Calculating the FFT of input data");
    	Complex[] binHeightsForFFT = Complex.realDoubleArrayToComplexArray(paddedData);
    	Complex[] resultOfFFT = FFT.fft(binHeightsForFFT);
   	double[] power = Complex.normSquared(resultOfFFT);
-	//  Using  MyFFT.java
+	////  Using  MyFFT.java
  	// int nn = paddedData.length;
   	// double[] resultOfFFT = MyFFT.fft(ComplexNumbers.myComplex(paddedData), nn, +1);
   	// //double[] resultOfFFT = MyFFT.fft(ComplexNumbers.myComplex(smoothedData), nn, +1);
@@ -110,13 +110,13 @@ public final class PeriodogramMaker {
  	// for ( int i=0; i < power.length; i++ ) {
  	//     power[i] *= nn*nn;
  	// }
-	//  Using  jTransform
-//   	DoubleFFT_1D jtransformFFT = new DoubleFFT_1D(paddedData.length);
-//   	jtransformFFT.realForward(paddedData);
-//   	double[] power = new double[paddedData.length];
-//   	for ( int i=0; i < paddedData.length/2; i++ ) {
-//   	    power[i] = paddedData[2*i]*paddedData[2*i] + paddedData[2*i+1]*paddedData[2*i+1];
-//   	}
+	////  Using  jTransform
+  	// DoubleFFT_1D jtransformFFT = new DoubleFFT_1D(paddedData.length);
+  	// jtransformFFT.realForward(paddedData);
+  	// double[] power = new double[paddedData.length];
+  	// for ( int i=0; i < paddedData.length/2; i++ ) {
+  	//     power[i] = paddedData[2*i]*paddedData[2*i] + paddedData[2*i+1]*paddedData[2*i+1];
+  	// }
 
 	//  Drop first terms and second half of power spectrum corresponding to negative frequencies
 	int size = power.length/2;
@@ -124,17 +124,18 @@ public final class PeriodogramMaker {
 	for ( int i=0; i < size; i++ ) {
 	    pow[i] = power[i+samplingFactor];
 	}
-// 	int i=0;
-// 	int j=0;
-// 	while ( i < size ) {
-// 	    while ( i <= samplingFactor ) {
-// 		pow[j] = power[i+samplingFactor+1];
-// 		i++;
-// 		j++;
-// 	    }
-// 	    j++;
-// 	}
-	// Keep only the good physically meaningful frequencies
+	// int i=0;
+	// int j=0;
+	// while ( i < size ) {
+	//     while ( i <= samplingFactor ) {
+	// 	pow[j] = power[i+samplingFactor+1];
+	// 	i++;
+	// 	j++;
+	//     }
+	//     j++;
+	// }
+
+	// Keep only the physically meaningful frequencies
 	DoubleArrayList goodFreqs = new DoubleArrayList();
 	DoubleArrayList goodPowers = new DoubleArrayList();
 	int i=0;
@@ -153,10 +154,10 @@ public final class PeriodogramMaker {
 	if ( goodPowers.size() == 0 ) {
 	    throw new PeriodogramException("All power values are NaN: Cannot construct Periodogram");
 	}
-	//  Construct the un-normalised FFTPeriodogram
 	return new FFTPeriodogram(goodFreqs.elements(), goodPowers.elements(), samplingFactor);
     }
 
+    
     /**
      * <code>makeUnnormalizedWindowedRateFFTPeriodogram</code>
      *
@@ -1078,9 +1079,9 @@ public final class PeriodogramMaker {
 	else {
 	    throw new PeriodogramException("Input data type must be: 'counts' or 'rates'");
 	}
-	double leahyNorm = 2d/sumOfSquaredIntensities;
-	double rmsNorm = leahyNorm/ts.meanRate();
-
+	//double leahyNorm = 2d/sumOfSquaredIntensities;
+	double leahyNorm = 2d/ts.sumOfBinHeights();
+	double rmsNorm = 2d/sumOfSquaredIntensities/ts.meanRate();
 
 	//  Define the normalization
 	double norm = 0;
@@ -1100,6 +1101,7 @@ public final class PeriodogramMaker {
 	    printAvailableNormalizations();
 	    throw new PeriodogramException("Unknown normalization ("+normName+")");
 	}
+
 	//  Apply the normalization correction for the window function
 	WindowFunction windowFunction = null;
 	try { 
