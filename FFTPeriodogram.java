@@ -18,11 +18,8 @@ public class FFTPeriodogram extends Periodogram {
     /**
      * Creates a new <code>FFTPeriodogram</code> instance. 
      * This default empty constructor can only be called from within the class.
-     *
      */
-    private FFTPeriodogram() {
-
-    }
+    private FFTPeriodogram() {}
 
     FFTPeriodogram(double[] freqs, double[] powers) {
 	this(freqs, powers, 1);

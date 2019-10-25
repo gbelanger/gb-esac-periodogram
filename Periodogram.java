@@ -44,7 +44,7 @@ public abstract class Periodogram {
      * Here are also defined the instance variables: nBins, nuMin, nuMax
      * @param freqs a <code>double[]</code> value
      */
-    protected void setFreqs(double[] freqs) {
+    void setFreqs(double[] freqs) {
 	this.freqs = Arrays.copyOf(freqs, freqs.length);
 	this.nBins = freqs.length;
 	this.nuMin = this.freqs[0];
@@ -54,7 +54,7 @@ public abstract class Periodogram {
 	logger.info("  nuMax = "+this.nuMax);
     }
 
-    protected void setSamplingFactor(int samplingFactor) {
+    void setSamplingFactor(int samplingFactor) {
 	this.samplingFactor = samplingFactor;
     }
     
@@ -67,7 +67,7 @@ public abstract class Periodogram {
      * and the boolean instance variance this.binWidthIsConstant is set to true.
      * @param binWidth a <code>double</code> value
      */
-    protected void setBinWidth(double binWidth) {
+    void setBinWidth(double binWidth) {
 	this.binWidth = binWidth;
 	this.binWidthIsConstant = true;
 	//  Define the binWidths, halfBinWidths and binEdges
@@ -90,7 +90,7 @@ public abstract class Periodogram {
      and set to false otherwise.
      * @param binWidths a <code>double[]</code> value
      */
-    protected void setBinWidths(double[] binWidths) {
+    void setBinWidths(double[] binWidths) {
 	this.binWidths = Arrays.copyOf(binWidths, binWidths.length);
 	//  Check if binning is constant
 	double var = BasicStats.getVariance(binWidths);
@@ -111,7 +111,7 @@ public abstract class Periodogram {
 	}
     }
 
-    protected void setPowers(double[] powers) {
+    void setPowers(double[] powers) {
 	this.powers = Arrays.copyOf(powers, powers.length);
 	this.maxPower = MinMax.getMax(this.powers);
 	this.freqAtMaxPower = this.freqs[DataUtils.getIndex(this.maxPower, this.powers)];
@@ -231,10 +231,6 @@ public abstract class Periodogram {
     }
     
     // writeAsQDP methods
-    public void writeAsQDP(Periodogram[] psdArray, String filename) throws IOException {
-	PeriodogramWriter.writeAsQDP(this, psdArray, filename);
-    }
-
     public void writeAsQDP(String filename) {
 	PeriodogramWriter.writeAsQDP(this, filename);
     }
@@ -258,6 +254,10 @@ public abstract class Periodogram {
     public void writeAsQDP(double[] func1, double[] func2, double[] func3, String lab1, String lab2, String lab3, String filename) {
 	PeriodogramWriter.writeAsQDP(this, func1, func2, func3, lab1, lab2, lab3, filename);
     }
+
+    public void writeAsQDP(Periodogram[] psdArray, String filename) throws IOException {
+	PeriodogramWriter.writeAsQDP(this, psdArray, filename);
+    }    
 
 
 }

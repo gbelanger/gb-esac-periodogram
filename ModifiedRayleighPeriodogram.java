@@ -9,19 +9,21 @@ import org.apache.log4j.Logger;
  *
  * @author <a href="mailto: guilaume.belanger@esa.int">Guillaume Belanger</a>
  * @version 1.0 (Nov 2010, ESAC)
- * @version 2.0 (Oct 2013, ESAC) 
- * @version 3.0 (Dec 2013, ESAC) # Added harmonic definition and constructor
+ * @version 1.1 (Oct 2013, ESAC) 
+ * @version 1.3 (Dec 2013, ESAC) # Added harmonic definition and constructor
  */
 public class ModifiedRayleighPeriodogram extends Periodogram {
 
     private static Logger logger  = Logger.getLogger(ModifiedRayleighPeriodogram.class);
-
     private int harmonic;
 
-    private ModifiedRayleighPeriodogram() {
-    
-    }
+    /**
+     * Creates a new <code>ModifiedRayleighPeriodogram</code> instance. 
+     * This default empty constructor can only be called from within the class.
+     */
+    private ModifiedRayleighPeriodogram() {}
 
+    
     ModifiedRayleighPeriodogram(double[] freqs, double[] powers,  int samplingFactor) {
 	this(freqs, powers, samplingFactor, 1);
     }

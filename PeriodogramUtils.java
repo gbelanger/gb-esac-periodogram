@@ -10,10 +10,10 @@ import org.apache.log4j.Logger;
 
 
 /**
- * Class <code>Periodogram</code> 
+ * Class <code>PeriodogramUtils</code> 
  *
  * @author <a href="mailto: guilaume.belanger@esa.int">Guillaume Belanger</a>, ESA/ESAC
- * @version 1.0  (last modified: Aug 2015)
+ * @version 1.0  (last modified: Apr 2019)
  *
  */
 public final class PeriodogramUtils {
@@ -21,6 +21,7 @@ public final class PeriodogramUtils {
     private static Logger logger  = Logger.getLogger(PeriodogramUtils.class);
     private static DecimalFormat exp = new DecimalFormat("0.0000#E00");
 
+    
     /**
      * The method <code>getFFTFrequencies</code> returns the independent frequencies (IF) for the specifies duration and number of bins. The Fourier spacing is defined by df=1/duration. The number of independent Fourier spacings (IFS) in the interval between nuMin and nuMax is given by nIFS = (nuMax-nuMin)/df = duration*(nuMax-nuMin). The minium and maximum frequencies that can be tested are respectively nuMin = 1/duration and the Nyquist frequency given by nuMax = 1/2dt, where dt is the sampling frequency (bin time) of the time series. Given that dt = duration/nbins, we can also write nuMax = nbins/2*duration, and thus only need to specify one of the two quantities nbins and dt. The number of the IFS is then nIFS = duration*(nbins/2*duration - 1/duration) = nbins/2 -1. Therefore the number of IF is nbins/2 given that nuMin and nuMax are respectively the lower and the upper bounds of the testable frequency range.
      *
@@ -46,6 +47,7 @@ public final class PeriodogramUtils {
 	return frequencies;
     }
 
+    
     /**
      * The method <code>getFourierFrequencies</code> returns the Fourier frequencies in a frequency interval using the specified oversampling. There is oversampling between the nuMin and nuMax that define the lower and upper bounds of the testable frequency range. This means that for the full Fourier range with nuMin=1/duration and nuMax = 1/2dt, the number of test frequencies will be given by nIF * oversampling - oversampling. 
      *
@@ -79,6 +81,7 @@ public final class PeriodogramUtils {
 	return freqs.elements();
     }
 
+    
     public static double[] getFourierFrequencies(double nuMin, double nuMax, double df) {
 	int nFreqs = (int) Math.round((nuMax-nuMin)/df);
 	double[] frequencies = new double[nFreqs];
@@ -88,6 +91,7 @@ public final class PeriodogramUtils {
 	return frequencies;
     }
 
+    
     /**
      * The method <code>getFourierPeriods</code> returns the periods that correspond to the frequencies returned by getFourierTestFrequencies, but in reverse order so that the periods are ascending.
      *
@@ -108,6 +112,7 @@ public final class PeriodogramUtils {
 	}
 	return testPeriods;
     }
+
     
     /**
      * The method <code>getPhases</code> uses the specified period to convert each time to its corresponding phase between 0 and 1.
@@ -127,11 +132,13 @@ public final class PeriodogramUtils {
 	return phases;
     }
 
+    
     // public static double[] getPhases(double[] times, double period, double phaseShift) {
     // 	double[] phases = getPhases(times, period);
     // 	return shiftPhases(phases, phaseShift);
     // }
 
+    
     public static double[] getPhases(double[] times, double[] periods) throws PeriodogramException {
 	if ( times.length != periods.length ) {
 	    throw new PeriodogramException("Input arrays must have the same number of elements");
@@ -146,6 +153,7 @@ public final class PeriodogramUtils {
 	return phases;
     }
 
+    
     public static double[] getPhases(double[] times, double slope, double intercept) throws PeriodogramException {
 	double[] periods = new double[times.length];
 	for ( int i=0; i < times.length; i++ ) {
@@ -153,6 +161,7 @@ public final class PeriodogramUtils {
 	}
 	return getPhases(times, periods);
     }
+
 
     public static double[] getPhases(double[] times, double tZero, double nu, double nuDot, double nuDotDot) {
 	double[] phases = new double[times.length];
@@ -188,6 +197,7 @@ public final class PeriodogramUtils {
 	return shiftedPhases;
     }
 
+
     public static int nIFS(double duration, double nuMin, double nuMax) {
 	return (new Double(Math.floor(duration*(nuMax - nuMin)))).intValue();
     }
@@ -217,6 +227,7 @@ public final class PeriodogramUtils {
 	return ifsEdgesInFreqSpace;
     }
 
+    
     public static double[] getIFSEdgesInPeriodSpace(double pmin, double pmax, double duration, double sampling, double ifsOffset) {
 	double numin = 1/pmax;
 	double numax = 1/pmin;
@@ -230,6 +241,7 @@ public final class PeriodogramUtils {
 	return ifsEdgesInPeriodSpace;
     }
 
+    
     /**
      * Method <code>getIntegratedPower</code> calculated the integral of the Periodogram: sum of binWidths[i]*power[i].
      *
@@ -254,11 +266,13 @@ public final class PeriodogramUtils {
 	}
 	return integral;
     }
+    
 
     public static double getIntegratedPower(Periodogram periodogram) {
 	return getIntegratedPower(periodogram, periodogram.nuMin(), periodogram.nuMax());
     }
 
+    
     /**
      * The method <code>fitPowerLawInLogSpace</code> performs a least squares fit to the periodogram in log-log space, i.e., a line y=mx+b where y if the power, and x is the frequency.
      *
@@ -268,9 +282,10 @@ public final class PeriodogramUtils {
 	logger.info("Fitting power-law in log space");
 	double[] freqsInLogSpace = Converter.lin2logSpace(psd.getFreqs());
 	double[] powsInLogSpace =  Converter.lin2logSpace(psd.getPowers());
-	return LeastSquaresFitter.leastSquaresFitLine(freqsInLogSpace, powsInLogSpace);
+	return LeastSquaresFitter.fitLine(freqsInLogSpace, powsInLogSpace);
     }
 
+    
     /**
      * The method <code>fitPowerLawInLinearSpace</code> performs a least squares fit to the peridogram in linear space, i.e., a power law y=n*x^alpha.
      *
@@ -278,9 +293,11 @@ public final class PeriodogramUtils {
      */
     public static double[] fitPowerLawInLinearSpace(Periodogram psd) {
 	logger.info("Fitting power-law in linear space");
-	double[] fitResult = LeastSquaresFitter.leastSquaresFitPowerLaw(psd.getFreqs(), psd.getPowers());
+	double[] fitResult = LeastSquaresFitter.fitPowerLaw(psd.getFreqs(), psd.getPowers());
 	double index = fitResult[0];
 	double normalization = fitResult[1];
 	return new double[] {index, normalization};
     }
+
+
 }

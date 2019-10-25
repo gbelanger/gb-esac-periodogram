@@ -7,6 +7,10 @@ import cern.jet.stat.Probability;
 import gb.esac.tools.BasicStats;
 import gb.esac.tools.DataUtils;
 import org.apache.log4j.Logger;
+import cern.colt.list.DoubleArrayList;
+import gb.esac.io.AsciiDataFileWriter;
+import gb.esac.binner.Binner;
+import java.io.IOException;
 
 public final class PowerCalculator {
 
@@ -109,6 +113,14 @@ public final class PowerCalculator {
 
 	// TIMES ASSUMED TO START AT ZERO
 
+	// For testing
+	// DoubleArrayList cs = new DoubleArrayList();
+	// DoubleArrayList ss = new DoubleArrayList();
+	// DoubleArrayList c2s = new DoubleArrayList();
+	// DoubleArrayList s2s = new DoubleArrayList();	
+	// DoubleArrayList cs_over_c2s = new DoubleArrayList();
+	// DoubleArrayList ss_over_s2s = new DoubleArrayList();	
+	
 	int k = harmonic;
 	double c = 0;
 	double s = 0;
@@ -128,8 +140,41 @@ public final class PowerCalculator {
 	    s += sinPhi*weight;
 	    sumOfCSqrd += Math.pow(cosPhi*weight, 2);
 	    sumOfSSqrd += Math.pow(sinPhi*weight, 2);
+
+	    // //  For testing
+	    // cs.add(cosPhi*weight);
+	    // ss.add(sinPhi*weight);
+	    // c2s.add(Math.pow(cosPhi*weight, 2));
+	    // s2s.add(Math.pow(sinPhi*weight, 2));
+	    // cs_over_c2s.add(cosPhi*weight/Math.pow(cosPhi*weight, 2));
+	    // ss_over_s2s.add(sinPhi*weight/Math.pow(sinPhi*weight, 2));	    
+	    // // to here
+	    
 	}
-	double power = Math.pow(c, 2)/sumOfCSqrd + Math.pow(s, 2)/sumOfSSqrd;
+	// //  For testing
+	// cs.trimToSize();
+	// ss.trimToSize();
+	// c2s.trimToSize();
+	// s2s.trimToSize();
+	// cs_over_c2s.trimToSize();
+	// ss_over_s2s.trimToSize();
+	// try {
+	    // AsciiDataFileWriter c_histo = new AsciiDataFileWriter("c-histo.qdp");
+	    // AsciiDataFileWriter s_histo = new AsciiDataFileWriter("s-histo.qdp");
+	    // AsciiDataFileWriter c2_histo = new AsciiDataFileWriter("c2-histo.qdp");
+	    // AsciiDataFileWriter s2_histo = new AsciiDataFileWriter("s2-histo.qdp");
+	    // AsciiDataFileWriter c_over_c2_histo = new AsciiDataFileWriter("c_over_c2-histo.qdp");	    
+	    // AsciiDataFileWriter s_over_s2_histo = new AsciiDataFileWriter("s_over_s2-histo.qdp");
+	    // c_histo.writeHisto(Binner.makeHisto(cs.elements(), times.length/25), "CosPhi*Weight");
+	    // s_histo.writeHisto(Binner.makeHisto(ss.elements(), times.length/25), "SinPhi*Weight");
+	    // c2_histo.writeHisto(Binner.makeHisto(c2s.elements(), times.length/25), "(CosPhi*Weight)\\u2");
+	    // s2_histo.writeHisto(Binner.makeHisto(s2s.elements(), times.length/25), "(SinPhi*Weight)\\u2");
+	    // c_over_c2_histo.writeHisto(Binner.makeHisto(cs_over_c2s.elements(), -1000, 1000, times.length/25), "(CosPhi*Weight)/(CosPhi*Weight)\\u2");
+	    // s_over_s2_histo.writeHisto(Binner.makeHisto(cs_over_c2s.elements(), -1000, 1000, times.length/25), "(SinPhi*Weight)/(SinPhi*Weight)\\u2");
+	// }
+	// catch (IOException e) {System.exit(-1);}	
+
+	double power = 2*mean*(Math.pow(c, 2)/sumOfCSqrd + Math.pow(s, 2)/sumOfSSqrd);
 	return power;
     }
 	

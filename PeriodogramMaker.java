@@ -18,6 +18,7 @@ import gb.esac.tools.FFT;
 import gb.esac.tools.MinMax;
 import gb.esac.tools.MyFFT;
 import org.apache.log4j.Logger;
+import gb.esac.tools.DataUtils;
 
 
 /**
@@ -791,10 +792,11 @@ public final class PeriodogramMaker {
 	//   Calculate power
 	logger.info("Calculating modified Rayleigh powers");
 	double[] powers = new double[nTrials];
+	double[] times_reset = DataUtils.resetToZero(binCentres);
 	for ( int i=0; i < nTrials; i++ ) {
 	    double period = 1.0/testFreqs[i];
-	    powers[i] = PowerCalculator.getModRayleighPower(binCentres, rates, errors, period, meanRate, harmonic);
-	    //powers[i] = PowerCalculator.getModRayleighPower(binCentres, filledRates, filledErrors, period, meanRate, harmonic);
+	    powers[i] = PowerCalculator.getModRayleighPower(times_reset, rates, errors, period, meanRate, harmonic);
+	    //powers[i] = PowerCalculator.getModRayleighPower(times_reset, filledRates, filledErrors, period, meanRate, harmonic);
 	}
 	return new ModifiedRayleighPeriodogram(testFreqs, powers, samplingFactor, harmonic);
     }
@@ -1059,6 +1061,9 @@ public final class PeriodogramMaker {
     }
 
     private static FFTPeriodogram applyNormalization(FFTPeriodogram basicPer, TimeSeries ts, String windowName, String normName, String inputDataType) throws PeriodogramException {
+	if ( !inputDataType.equals("counts") && !inputDataType.equals("rates") ) {
+	    throw new PeriodogramException("Input data types can only be 'counts' or 'rates'");
+	}
 	logger.info("Applying '"+normName+"' normalization (for '"+inputDataType+"' data type)");
 	//  Calculate normalization factors
 	double duration = ts.duration();
@@ -1070,14 +1075,9 @@ public final class PeriodogramMaker {
 	double varNorm = 2d/(n*n*freqBinWidth);
 	double leahyLikeNorm = 2d/avgRawPower;
 	double sumOfSquaredIntensities = 0;
-	if ( inputDataType.equals("counts") ) {
-	    sumOfSquaredIntensities = BasicStats.getSumOfSquares(ts.getMeanSubtractedBinHeights());
-	}
-	else if ( inputDataType.equals("rates") ) {
+	sumOfSquaredIntensities = BasicStats.getSumOfSquares(ts.getMeanSubtractedBinHeights());
+	if ( inputDataType.equals("rates") ) {
 	    sumOfSquaredIntensities = BasicStats.getSumOfSquares(ts.getMeanSubtractedRates());
-	}
-	else {
-	    throw new PeriodogramException("Input data type must be: 'counts' or 'rates'");
 	}
 	//double leahyNorm = 2d/sumOfSquaredIntensities;
 	double leahyNorm = 2d/ts.sumOfBinHeights();

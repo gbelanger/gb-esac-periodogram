@@ -136,7 +136,8 @@ final class PeriodogramWriter {
 	"LINE ON",
 	"LINE STEP ON 1",
 	"VIEW 0.2 0.1 0.8 0.9",
-	"LOG X ON",
+	//"LOG X ON",
+	"LOG ON",	
 	"LAB Y Power",
 	"LAB X Frequency (Hz)",
 	"!"
@@ -152,7 +153,8 @@ final class PeriodogramWriter {
 	"LINE ON",
 	"LINE STEP ON 1",
 	"VIEW 0.2 0.1 0.8 0.9",
-	"LOG X ON",
+	//"LOG X ON",
+	"LOG ON",	
 	"LAB Y Power",
 	"LAB X Frequency (Hz)",
 	"!"
